@@ -86,8 +86,9 @@
               <template v-if="cartData.carts">
                 <tr v-for='item in cartData.carts' :key='item.id +"cart"'>
                   <td>
-                    <button type="button" class="btn btn-outline-danger btn-sm">
-                      <i class="fas fa-spinner fa-pulse"></i>
+                    <button :disabled="isLoadingItem===item.id"
+                    @click="removeCartItem(item.id)"
+                    type="button" class="btn btn-outline-danger btn-sm">
                       x
                     </button>
                   </td>
@@ -100,8 +101,12 @@
                   <td>
                     <div class="input-group input-group-sm">
                       <div class="input-group mb-3">
-                        <input v-model="item.qty"
-                             min="1" type="number" class="form-control">
+                        <!-- <input v-model="item.qty"
+                             min="1" type="number" class="form-control"> -->
+                        <select id="" class="form-select">
+                          <!-- :selected="item.qty===num" 選擇當前的值，num迴圈有20個，如果qty數量跟num一樣時，就選擇這個值 -->
+                          <option :value="num" v-for='num in 20' :key='`${num}${item.id}`' :selected="item.qty===num">{{num}}</option>
+                        </select>
                         <span class="input-group-text" id="basic-addon2">{{ item.product.unit }}</span>
                       </div>
                     </div>

@@ -1,7 +1,6 @@
 import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.31/vue.esm-browser.min.js';
 const apiUrl = 'https://vue3-course-api.hexschool.io';
 const api_path = 'peiying';
-let cartTotal;
 const app=createApp({
     data(){
         return{
@@ -37,7 +36,6 @@ const app=createApp({
                 
             this.cartData=res.data.data;
             console.log(this.cartData);
-            cartTotal=res.data.data;
 
             
             })
@@ -60,7 +58,16 @@ const app=createApp({
             .catch(err=>{
                 console.dir(err)
             })
-        }
+        },
+        removeCartItem(id) {
+            this.isLoadingItem = id;
+            axios.delete(`${apiUrl}/api/${api_path}/cart/${id}`)
+            .then((res) => {
+                console.log(res);
+                this.getCart();
+                this.isLoadingItem = '';
+            });
+        },
 
         
     },
@@ -103,7 +110,8 @@ app.component('product-modal',{
             .catch(err=>{
                 console.log(err)
             })
-        }
+        },
+        
     },
     //抓DOM
     mounted(){
@@ -111,6 +119,3 @@ app.component('product-modal',{
     }
 })
 app.mount('#app');
-
-
-console.log(cartTotal)
