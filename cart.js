@@ -1,15 +1,34 @@
-import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.31/vue.esm-browser.min.js';
+//import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.31/vue.esm-browser.min.js';
 const apiUrl = 'https://vue3-course-api.hexschool.io';
 const api_path = 'peiying';
-const app=createApp({
+const { defineRule, Form, Field, ErrorMessage, configure } = VeeValidate;
+const { required, email, min, max } = VeeValidateRules;
+const { localize, loadLocaleFromURL } = VeeValidateI18n;
+
+defineRule('required', required);
+defineRule('email', email);
+defineRule('min', min); //限制最小的值，例如：3碼
+defineRule('max', max); //限制最大的值
+//宣告語言為中文
+loadLocaleFromURL('https://unpkg.com/@vee-validate/i18n@4.1.0/dist/locale/zh_TW.json');
+const app=Vue.createApp({
     data(){
         return{
             cartData:{},
             products:[],
             productId:'',
             isLoadingItem:'',
+            cart:{
+                carts:[]
+                //因為一開始渲染時，沒有資料的狀態無法讀取length
+            }
             
         }
+    },
+    components: {
+        VForm: Form,
+        VField: Field,
+        ErrorMessage: ErrorMessage,
     },
     methods:{
         getProducts(){
@@ -35,7 +54,12 @@ const app=createApp({
             .then(res=>{
                 
             this.cartData=res.data.data;
-            console.log(this.cartData);
+            if(this.cartData.carts.length===0){
+                this.cart={
+                carts:[]};
+            }else{
+                this.cart=res.data.data;
+            }
 
             
             })
@@ -98,7 +122,7 @@ const app=createApp({
     
 });
 app.component('product-modal',{
-    props:['id'],
+    props:['id','is-loading-item'],
     template:'#userProductModal',
     data(){
         return{

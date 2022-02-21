@@ -18,7 +18,7 @@
         <div class="container">
             <div class="mt-4">
             <!-- 產品Modal -->
-            <product-modal :id="productId" ref="productModal" @add-cart="addToCart"></product-modal>
+            <product-modal :id="productId" :is-loading-item="isLoadingItem" ref="productModal" @add-cart="addToCart"></product-modal>
             <!-- 產品Modal -->
             
             <table class="table align-middle">
@@ -71,7 +71,7 @@
           </table>
           <!-- 購物車列表 -->
           <div class="text-end">
-            <button class="btn btn-outline-danger" type="button">清空購物車</button>
+            <button :disabled="cart.carts.length === 0" class="btn btn-outline-danger" type="button">清空購物車</button>
           </div>
           <table class="table align-middle">
             <thead>
@@ -132,11 +132,11 @@
           </table>
         </div>
         <div class="my-5 row justify-content-center">
-          <!-- <v-form ref="form" class="col-md-6" v-slot="{ errors }" >
+          <v-form ref="form" class="col-md-6" v-slot="{ errors }" >
             <div class="mb-3">
               <label for="email" class="form-label">Email</label>
               <v-field id="email" name="email" type="email" class="form-control"
-                       :class="{ 'is-invalid': errors['email'] }" placeholder="請輸入 Email" 
+                      :class="{ 'is-invalid': errors['email'] }" rules="required" placeholder="請輸入 Email" 
                       ></v-field>
               <error-message name="email" class="invalid-feedback"></error-message>
             </div>
@@ -151,7 +151,7 @@
             <div class="mb-3">
               <label for="tel" class="form-label">收件人電話</label>
               <v-field id="tel" name="電話" type="text" class="form-control" :class="{ 'is-invalid': errors['電話'] }"
-                       placeholder="請輸入電話" ></v-field>
+                       placeholder="請輸入電話" rules="required"></v-field>
               <error-message name="電話" class="invalid-feedback"></error-message>
             </div>
 
@@ -166,11 +166,13 @@
               <label for="message" class="form-label">留言</label>
               <textarea id="message" class="form-control" cols="30" rows="10" ></textarea>
             </div>
+            
             <div class="text-end">
-              <button type="submit" class="btn btn-danger"
+              <button type="submit" class="btn btn-danger" :disabled="Object.keys(errors).length>0 || cart.carts.length===0"
                       >送出訂單</button>
             </div>
-          </v-form> -->
+          </v-form>
+          
         </div>
       </div>
     </div>
@@ -203,9 +205,14 @@
             
             <div>
               <div class="input-group">
-                <input type="number" class="form-control"
-                       min="1" v-model="qty">
-                <button type="button" class="btn btn-primary" @click="addToCart">加入購物車</button>
+                <select :disabled="isLoadingItem===product.id"
+                        id="" class="form-select" v-model="qty">
+                          <!-- option的標籤加入:selected="item.qty===num" 選擇當前的值，num迴圈有20個，如果qty數量跟num一樣時，就選擇這個值；但之後這行被刪了，因為有select標籤綁定v-model綁定 -->
+                          <option :value="num" v-for='num in 20' :key='`${num}${product.id}+model`' :selected="num">{{num}}</option>
+                        </select>
+                <!-- <input type="number" class="form-control"
+                       min="1" v-model="qty"> -->
+                <button type="button" class="btn btn-primary" @click="addToCart" :disabled="isLoadingItem===product.id">加入購物車</button>
       </div>
       </div>
       </div>
