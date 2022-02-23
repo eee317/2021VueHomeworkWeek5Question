@@ -19,9 +19,6 @@ configure({
     validateOnInput: true, // 調整為：輸入文字時，就立即進行驗證
 });
 const app=Vue.createApp({
-    components:{
-        pagination
-    },
     data(){
         return{
             paginationData:{},
@@ -49,14 +46,14 @@ const app=Vue.createApp({
         VForm: Form,
         VField: Field,
         ErrorMessage: ErrorMessage,
+        pagination
     },
     methods:{
         getProducts(page=1){
-            axios.get(`${apiUrl}/v2/api/${api_path}/products/?=page=${page}`)
+            axios.get(`${apiUrl}/v2/api/${api_path}/products/?page=${page}`)
             .then(res=>{
                 this.products=res.data.products;
                 this.paginationData=res.data.pagination;
-                
             })
             .catch(err=>{
                 console.log(err)

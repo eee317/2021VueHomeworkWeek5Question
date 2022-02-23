@@ -69,7 +69,7 @@
               </tr>
             </tbody>
           </table>
-          <pagination></pagination>
+          <pagination :pages='paginationData' @get-products="getProducts"></pagination>
           <!-- 購物車列表 -->
           <div class="text-end">
             <button :disabled="cart.carts.length === 0" class="btn btn-outline-danger" type="button" @click='deleteCartAll'>清空購物車</button>
