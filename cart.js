@@ -1,4 +1,5 @@
 //import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.31/vue.esm-browser.min.js';
+import pagination from './pagination.js'
 const apiUrl = 'https://vue3-course-api.hexschool.io';
 const api_path = 'peiying';
 const { defineRule, Form, Field, ErrorMessage, configure } = VeeValidate;
@@ -11,9 +12,19 @@ defineRule('min', min); //限制最小的值，例如：3碼
 defineRule('max', max); //限制最大的值
 //宣告語言為中文
 loadLocaleFromURL('https://unpkg.com/@vee-validate/i18n@4.1.0/dist/locale/zh_TW.json');
+configure({
+    generateMessage: context => {
+        return `請填寫 ${context.field}`;
+    },
+    validateOnInput: true, // 調整為：輸入文字時，就立即進行驗證
+});
 const app=Vue.createApp({
+    components:{
+        pagination
+    },
     data(){
         return{
+            paginationData:{},
             cartData:{},
             products:[],
             productId:'',
@@ -21,6 +32,15 @@ const app=Vue.createApp({
             cart:{
                 carts:[]
                 //因為一開始渲染時，沒有資料的狀態無法讀取length
+            },
+            userData:{
+                "user": {
+                    "name": "",
+                    "email": "",
+                    "tel": "",
+                    "address": ""
+                },
+                "message": ""
             }
             
         }
@@ -31,11 +51,11 @@ const app=Vue.createApp({
         ErrorMessage: ErrorMessage,
     },
     methods:{
-        getProducts(){
-            axios.get(`${apiUrl}/v2/api/${api_path}/products/all`)
+        getProducts(page=1){
+            axios.get(`${apiUrl}/v2/api/${api_path}/products/?=page=${page}`)
             .then(res=>{
                 this.products=res.data.products;
-                console.log(this.products)
+                this.paginationData=res.data.pagination;
                 
             })
             .catch(err=>{
@@ -109,7 +129,36 @@ const app=Vue.createApp({
             .catch(err=>{
                 console.log(err)
             })
+        },
+        deleteCartAll(){
+            const url=`${apiUrl}/v2/api/${api_path}/carts`
+            axios.delete(url)
+            .then(res=>{
+                alert(`${res.data.message}購物車所有商品`)
+                this.getCart();
+            })
+            .catch(err=>{
+                console.log(err)
+            })
+        },
+        postOrder(){
+            const url=`${apiUrl}/v2/api/${api_path}/order`
+            axios.post(url,{data:this.userData})
+            .then(res=>{
+                console.log(res)
+                this.$refs.form.resetForm();
+            })
+            .catch(err=>{
+                console.log(err)
+            })
+        },
+        isPhone(value){
+            const phoneNumber = /^(09)[0-9]{8}$/;
+            //使用test()來檢查是否匹配value的值，如果不匹配false，顯示後面的字串
+            return phoneNumber.test(value) ? true : '需要正確的手機號碼，至少8碼';
+
         }
+
 
         
     },
@@ -169,4 +218,5 @@ app.component('product-modal',{
         this.modal = new bootstrap.Modal(this.$refs.modal);
     }
 })
+
 app.mount('#app');

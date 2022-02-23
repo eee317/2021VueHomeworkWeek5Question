@@ -1,0 +1,7 @@
+{
+    "favorites.resources": [
+        "index.html",
+        "cart.js"
+    ],
+    "liveServer.settings.port": 5501
+}
